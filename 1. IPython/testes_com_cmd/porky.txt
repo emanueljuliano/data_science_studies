@@ -1,0 +1,14 @@
+ O volume na unidade C ‚ Acer
+ O N£mero de S‚rie do Volume ‚ 06B7-E2EC
+
+ Pasta de C:\Users\emanu\programacao\jupiter
+
+06/04/2019  14:39    <DIR>          .
+06/04/2019  14:39    <DIR>          ..
+06/04/2019  12:16            26.491 1.04-input-output-history.html
+06/04/2019  14:38                27 bacon.txt
+06/04/2019  14:37                10 bacont.txt
+06/04/2019  11:49             7.535 ipython.html
+06/04/2019  14:39                 0 porky.txt
+               5 arquivo(s)         34.063 bytes
+               2 pasta(s)   667.503.116.288 bytes dispon¡veis

@@ -1,11 +1,25 @@
+__author__ = "Emanuel Juliano Morais Silva"
+__email__ = "emanueljulianoms@gmail.com"
+
 import requests
 import json
 import csv
 import datetime
 import time
 import pandas as pd
-import numpy as np
+import argparse
 
+parser = argparse.ArgumentParser(description="""This script receives a `.csv` file with a list of subreddits,
+                                                obtain the comments from all subreddits and write csv files
+                                                with their contents""")
+
+parser.add_argument("--src", dest="src", type=str, default="./data/reddit/subreddits.csv",
+                    help=".csv with rows 'Subreddits' in the shape /r/subreddit_name/")
+
+parser.add_argument("--dst", dest="dst", type=str, default="./data/reddit/cm/",
+                    help="Where to save the output files.")
+
+args = parser.parse_args()
 
 def get_pushshift_data_comments(query, after, before, sub):
     """
@@ -22,8 +36,7 @@ def get_pushshift_data_comments(query, after, before, sub):
 
     print(url)  # print used to verify if the url during the process.
 
-    r = requests.get(url)
-    data = json.loads(r.text)
+    data = requests.get(url).json()
 
     return data['data']
 
@@ -57,7 +70,7 @@ def update_comments_file(sub):
     """
 
     upload_com_count = 0
-    file = f"Comments-Data/{sub}_Comments.csv"
+    file = f"{args.dst}{sub}_comments.csv"
 
     with open(file, 'w', newline='', encoding='utf-8') as file:
         a = csv.writer(file)
@@ -68,7 +81,8 @@ def update_comments_file(sub):
             a.writerow(com_stats[com][0])
             upload_com_count += 1
 
-        print(str(upload_com_count) + f" comments have been uploaded at {sub}.csv")  # feedback during the process.
+        # feedback during the process.
+        print(str(upload_com_count) + f" comments have been uploaded at {args.dst}{sub}_comments.csv")
 
 
 if __name__ == '__main__':
@@ -76,15 +90,14 @@ if __name__ == '__main__':
     # Run code and loop until all comments are collected from all subreddits
 
     # List of subreddits:
-    df = pd.read_csv('subreddits.csv')
+    df = pd.read_csv(args.src)
     subreddits = df.values.tolist()
 
-    for sub in subreddits[1:]:
-        print(sub)
+    for sub in subreddits:
         sub = str(sub)[5:-5]
 
         before = int(time.time())  # current date
-        after = '1119484800'  # 06/23/2005 reddit creation
+        after = '1532059729'  # 06/23/2005 reddit creation
         query = ''  # look for all comments
         com_count = 0
         com_stats = {}
@@ -93,7 +106,7 @@ if __name__ == '__main__':
 
         # Will run until all posts have been gathered
 
-        while len(data_com) > 0:
+        for i in range(1):
 
             for coms in data_com:
                 collect_com_data(coms)
@@ -104,7 +117,6 @@ if __name__ == '__main__':
             print(str(datetime.datetime.fromtimestamp(data_com[-1]['created_utc'])))  # Date of the last comment.
 
             after = data_com[-1]['created_utc']
-            print(after)
             data_com = get_pushshift_data_comments(query, after, before, sub)
 
             update_comments_file(sub)  # Upload to CSV file.
